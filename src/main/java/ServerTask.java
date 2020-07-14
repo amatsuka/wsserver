@@ -3,19 +3,24 @@ import java.net.Socket;
 
 public class ServerTask implements Runnable {
     private final Socket socket;
-    private BufferedReader in;
+    private HttpStreamReader in;
     private BufferedWriter out;
 
     public ServerTask(Socket socket) throws IOException {
         this.socket = socket;
 
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        in = new HttpStreamReader(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+        new DataInputStream(socket.getInputStream()).close();
     }
 
     @Override
     public void run() {
         System.out.println("Server thread started " + Thread.currentThread().getName());
+        HttpMessage message = in.readHttpMessage();
+        System.out.println(message);
+
 
         try {
             Thread.sleep(5000);

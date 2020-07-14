@@ -5,7 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /*
- @TODO Обьект инкапсулирующий сокет. Это объект передается в runnable вместо сокета.
+ @TODO В текущей кривой реализации написать весь процесс взаимодейсвтия с браузером. Потом уже выделять архитектуру.
+ Возможно нужны отдельные потоки на чтение и запись.
  */
 public class Main {
     private static ExecutorService executor = Executors.newFixedThreadPool(2);
