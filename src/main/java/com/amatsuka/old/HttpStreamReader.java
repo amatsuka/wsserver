@@ -1,3 +1,5 @@
+package com.amatsuka.old;
+
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;

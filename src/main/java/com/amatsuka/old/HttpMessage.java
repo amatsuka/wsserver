@@ -1,3 +1,5 @@
+package com.amatsuka.old;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

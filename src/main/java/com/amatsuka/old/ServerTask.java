@@ -1,3 +1,5 @@
+package com.amatsuka.old;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -17,7 +19,7 @@ public class ServerTask implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Server thread started " + Thread.currentThread().getName());
+        System.out.println("com.amatsuka.Server thread started " + Thread.currentThread().getName());
         HttpMessage message = in.readHttpMessage();
         System.out.println(message);
 
@@ -35,7 +37,7 @@ public class ServerTask implements Runnable {
                 ignored.printStackTrace();
             }
 
-            System.out.println("Server thread stopped " + Thread.currentThread().getName());
+            System.out.println("com.amatsuka.Server thread stopped " + Thread.currentThread().getName());
         }
     }
 }
