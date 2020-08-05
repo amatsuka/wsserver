@@ -1,0 +1,13 @@
+version: '3.2'
+
+services:
+  nginx:
+    #restart: always
+    image: nginx:stable-alpine
+    network_mode: host
+    volumes:
+      - ./conf/nginx:/etc/nginx/conf.d:ro      
+      - ./front-pitstop:/front-pitstop:ro      
+      - ./front-pitstop/logs:/var/log/nginx:rw
+
+  

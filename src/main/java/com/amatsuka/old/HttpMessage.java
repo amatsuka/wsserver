@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class HttpMessage {
     private final List<String> lines = new ArrayList<>();
-    private boolean isFinished = false;
 
     public HttpMessage addLine(String line) {
         lines.add(line);

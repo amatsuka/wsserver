@@ -1,8 +1,12 @@
 package com.amatsuka.tasks;
 
 import com.amatsuka.IOWSocket;
+import com.amatsuka.old.HttpMessage;
+import com.amatsuka.old.HttpStreamReader;
+import com.amatsuka.old.HttpStreamWriter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
@@ -16,10 +20,22 @@ public class ConnectionTask implements Runnable {
             try {
                 Socket socket = sockets.take();
 
-                //Establish ws connection by http request
+                HttpStreamReader in = new HttpStreamReader(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+                HttpStreamWriter out = new HttpStreamWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
 
-                connections.add(new IOWSocket(socket.getInputStream(), socket.getOutputStream()));
-            } catch (InterruptedException e) {
+                HttpMessage httpMessage = in.readHttpMessage();
+
+                HttpMessage responseMessage = new HttpMessage()
+                        .addLine("HTTP/1.1 101 Switching Protocols")
+                        .addLine("Upgrade: websocket")
+                        .addLine("Connection: Upgrade")
+                        .addLine("Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=")
+                        .addLine("\n");
+
+                out.writeHttpMessage(responseMessage);
+
+                connections.add(new IOWSocket(socket.getOutputStream(), socket.getInputStream()));
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         }

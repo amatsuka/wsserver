@@ -53,6 +53,7 @@ public class Server {
         clientRegistry = new ClientRegistry();
         connectionQueue = new ArrayBlockingQueue<>(100);
         readyToWriteQueue = new ArrayBlockingQueue<>(100);
+        init();
     }
 
     public void init() {
