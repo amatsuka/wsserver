@@ -30,9 +30,11 @@ public class ConnectionTask implements Runnable {
                         .addLine("Upgrade: websocket")
                         .addLine("Connection: Upgrade")
                         .addLine("Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=")
-                        .addLine("\n");
+                        .addLine("\r\n");
 
                 out.writeHttpMessage(responseMessage);
+
+                HttpMessage httpMessage2 = in.readHttpMessage();
 
                 connections.add(new IOWSocket(socket.getOutputStream(), socket.getInputStream()));
             } catch (InterruptedException | IOException e) {

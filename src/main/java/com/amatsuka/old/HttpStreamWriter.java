@@ -12,6 +12,7 @@ public class HttpStreamWriter {
     public void writeHttpMessage(HttpMessage message) {
         try {
             out.write(message.toString());
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

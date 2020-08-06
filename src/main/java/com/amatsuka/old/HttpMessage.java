@@ -42,6 +42,6 @@ public class HttpMessage {
     }
 
     public String toString() {
-        return String.join("\n", lines);
+        return String.join("\r\n", lines);
     }
 }
