@@ -1,6 +1,7 @@
 package com.amatsuka;
 
 import com.amatsuka.tasks.ConnectionTask;
+import com.amatsuka.tasks.CreateClientTask;
 import com.amatsuka.tasks.SocketWriteTask;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class Server {
     public void init() {
         socketQueueExecutor.submit(new ConnectionTask(socketQueue, connectionQueue));
         readyToWriteQueueExecutor.submit(new SocketWriteTask(readyToWriteQueue));
+        connectionQueueExecutor.submit(new CreateClientTask(connectionQueue, clientRegistry));
     }
 
     public void run(ServerSocket serverSocket) throws IOException {

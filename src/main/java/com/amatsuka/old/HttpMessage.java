@@ -35,6 +35,8 @@ public class HttpMessage {
         lines.stream().forEach(line -> {
             String[] pair = line.split(": ");
 
+            if (pair.length != 2) return;
+
             result.put(pair[0], pair[1]);
         });
 

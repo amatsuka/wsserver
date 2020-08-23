@@ -17,10 +17,8 @@ public class CreateClientTask implements Runnable {
         while (true) {
             try {
                 IOWSocket iowSocket = connections.take();
-
-                //Создание wsclient, потока для чтения input stream, добавление в реестр клиентов
-
-                clientRegistry.add(new WSClient(iowSocket, "some identifier"));
+                //TODO Генерация рандомного UUID клинета. Учесть многопоточность
+                clientRegistry.add(new WSClient(iowSocket, null));
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
