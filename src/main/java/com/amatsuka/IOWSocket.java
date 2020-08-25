@@ -14,4 +14,6 @@ public class IOWSocket {
 
     private final Queue<String> inMessages = new ArrayDeque<>();
     private final Queue<String> outMessages = new ArrayDeque<>();
+
+    private final boolean isClosed = false;
 }

@@ -1,4 +1,4 @@
-package com.amatsuka.old;
+package com.amatsuka.http;
 
 import lombok.RequiredArgsConstructor;
 

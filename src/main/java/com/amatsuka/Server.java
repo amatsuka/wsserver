@@ -1,22 +1,16 @@
 package com.amatsuka;
 
-import com.amatsuka.tasks.ConnectionTask;
-import com.amatsuka.tasks.CreateClientTask;
-import com.amatsuka.tasks.SocketWriteTask;
+import com.amatsuka.tasks.ConnectClientSupplier;
+import com.amatsuka.tasks.CreateReadThreadFunction;
+import com.amatsuka.tasks.WriteTask;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class Server {
-    /**
-     * Очередь входящих сокет соединений готовых к подключению
-     */
-    private final BlockingQueue<Socket> socketQueue;
+
+    private static int MAX_CONNECTIONS_COUNT = 100;
 
     /**
      * Реестр подключенных клиентов
@@ -24,52 +18,44 @@ public class Server {
     private final ClientRegistry clientRegistry;
 
     /**
-     * Очередь установленных ws соединений ожидающих создания потоков на чтение
-     * и добавления в реестр подключенных клиентов
-     */
-    private final BlockingQueue<IOWSocket> connectionQueue;
-
-    /**
      * Очередь ws соединений ожидающих записи данных в сокет
      */
     private final BlockingQueue<IOWSocket> readyToWriteQueue;
-
-    /**
-     * Обработчик очереди входящих сокет соединений
-     */
-    private final ExecutorService socketQueueExecutor = Executors.newFixedThreadPool(2);
-
-    /**
-     * Обработчик очереди установленных ws соединений
-     */
-    private final ExecutorService connectionQueueExecutor = Executors.newFixedThreadPool(2);
 
     /**
      * Обработчик очереди ожидающих записи в сокет соединений
      */
     private final ExecutorService readyToWriteQueueExecutor = Executors.newFixedThreadPool(2);
 
+    /**
+     * Обработчик очереди установленных ws соединений
+     */
+    private final ExecutorService connectionExecutor = Executors.newFixedThreadPool(2);
+
+    /**
+     * Пул потоков на чтение из сокетов
+     */
+    private final ExecutorService readExecutor = Executors.newFixedThreadPool(MAX_CONNECTIONS_COUNT);
+
     public Server() {
-        socketQueue = new ArrayBlockingQueue<>(100);
         clientRegistry = new ClientRegistry();
-        connectionQueue = new ArrayBlockingQueue<>(100);
         readyToWriteQueue = new ArrayBlockingQueue<>(100);
         init();
     }
 
     public void init() {
-        socketQueueExecutor.submit(new ConnectionTask(socketQueue, connectionQueue));
-        readyToWriteQueueExecutor.submit(new SocketWriteTask(readyToWriteQueue));
-        connectionQueueExecutor.submit(new CreateClientTask(connectionQueue, clientRegistry));
+        readyToWriteQueueExecutor.submit(new WriteTask(readyToWriteQueue));
     }
 
-    public void run(ServerSocket serverSocket) throws IOException {
+    public void run(ServerSocket serverSocket) {
         try {
             while (true) {
-                socketQueue.add(serverSocket.accept());
+                CompletableFuture.supplyAsync(new ConnectClientSupplier(serverSocket.accept()), connectionExecutor)
+                        .thenApplyAsync(new CreateReadThreadFunction(readExecutor), connectionExecutor)
+                        .thenAcceptAsync(clientRegistry::add);
             }
         } catch (IOException e) {
-            serverSocket.close();
+            e.printStackTrace();
         }
     }
 }

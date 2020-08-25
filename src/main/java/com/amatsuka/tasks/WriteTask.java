@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Queue;
 
 @RequiredArgsConstructor
-public class SocketWriteTask implements Runnable {
+public class WriteTask implements Runnable {
     private final Queue<IOWSocket> hasMessagesToWriteQueue;
 
     @Override
