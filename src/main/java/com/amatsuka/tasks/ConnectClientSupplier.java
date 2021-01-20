@@ -51,6 +51,7 @@ public class ConnectClientSupplier implements Supplier<WSClient> {
 
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
